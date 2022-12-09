@@ -59,7 +59,7 @@ public class Lexer {
     }
 
     private void identifierOrKeyword() {
-        while (Rules.isAlphabetic(peek()) || Rules.isDigit(peek()) || peek() == '_') {
+        while (Rules.isAlphaDigit(peek()) || peek() == '_') {
             advance();
         }
 

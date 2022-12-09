@@ -1,5 +1,7 @@
 package com.inanyan.sl.ast;
 
+import org.junit.experimental.categories.Categories;
+
 public abstract class Expr extends Node {
     public abstract <R> R accept(Visitor<R> visitor);
 
@@ -19,6 +21,17 @@ public abstract class Expr extends Node {
         }
 
         public int value;
+
+        @Override
+        public boolean compareTo(Object stmt) {
+            if (!(stmt instanceof IntLiteral)) {
+                return false;
+            }
+
+            IntLiteral comp = (IntLiteral) stmt;
+
+            return comp.line == this.line && comp.value == this.value;
+        }
     }
 
     public static class Var extends Expr {
@@ -30,6 +43,17 @@ public abstract class Expr extends Node {
         @Override
         public <R> R accept(Visitor<R> visitor) {
             return visitor.visitVar(this);
+        }
+
+        @Override
+        public boolean compareTo(Object stmt) {
+            if (!(stmt instanceof Var)) {
+                return false;
+            }
+
+            Var comp = (Var) stmt;
+
+            return comp.line == this.line && comp.text.equals(this.text);
         }
 
         public String text;

@@ -1,9 +1,11 @@
 package com.inanyan.sl.ast;
 
-public class Node {
+public abstract class Node {
     public final int line;
 
     public Node(int line) {
         this.line = line;
     }
+
+    public abstract boolean compareTo(Object stmt);
 }

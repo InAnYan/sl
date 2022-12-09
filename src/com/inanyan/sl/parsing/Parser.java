@@ -23,6 +23,10 @@ public class Parser {
         List<Stmt> result = new ArrayList<>();
 
         while(!isAtEnd()) {
+            skipSemicolons();
+
+            if (isAtEnd()) break;
+
             try {
                 result.add(statement());
             } catch (ParserError e) {
@@ -35,21 +39,20 @@ public class Parser {
 
     // TODO: Test somehow
     private void synchronize() {
-        advance();
-        if (previous().type == TokenType.SEMICOLON) return;
-        switch (peek().type) {
-            case PRINT:
-            case EOF:
-                break;
-            default:
-                advance();
-                break;
+        if (!isAtEnd()) advance();
+        while (true) {
+            if (previous().type == TokenType.SEMICOLON) return;
+            switch (peek().type) {
+                case PRINT:
+                case EOF:
+                    return;
+                default:
+                    advance();
+            }
         }
     }
 
     private Stmt statement() {
-        skipSemicolons();
-
         if (match(TokenType.PRINT)) return printStmt();
         else return exprStmt();
     }
@@ -57,12 +60,14 @@ public class Parser {
     private Stmt.Print printStmt() {
         int line = previous().line;
         Expr expr = expression();
+        require(TokenType.SEMICOLON, "expected ';' after print statement");
         return new Stmt.Print(line, expr);
     }
 
     private Stmt.Expression exprStmt() {
         int line = peek().line; // TODO: Like this?
         Expr expr = expression();
+        require(TokenType.SEMICOLON, "expected ';' after expression statement");
         return new Stmt.Expression(line, expr);
     }
 
@@ -70,8 +75,8 @@ public class Parser {
         if (match(TokenType.INT_NUMBER)) return intNumber();
         else if (match(TokenType.IDENTIFIER)) return var();
         else {
-            errorAtPeek("expected expression");
-            return null;
+            // TODO: Test this
+            errorAtPeek("expected expression"); return null;
         }
     }
 
@@ -80,12 +85,7 @@ public class Parser {
     }
 
     private Expr intNumber() {
-        try {
-            return new Expr.IntLiteral(previous().line, Integer.parseInt(previous().text));
-        } catch (NumberFormatException e) {
-            errorAtPrevious("can not parse integer literal");
-            return null;
-        }
+        return new Expr.IntLiteral(previous().line, Integer.parseInt(previous().text));
     }
 
     private void skipSemicolons() {
@@ -94,6 +94,7 @@ public class Parser {
 
     private void error(int line, String msg) {
         errorListener.reportError(line, msg);
+        throw new ParserError();
     }
 
     private void errorAtPrevious(String msg) {
@@ -110,6 +111,14 @@ public class Parser {
             return true;
         }
         return false;
+    }
+
+    private Token require(TokenType type, String errorMsg) {
+        if (match(type)) {
+            return previous();
+        } else {
+            errorAtPeek(errorMsg); return null;
+        }
     }
 
     private Token peek() {

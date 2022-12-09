@@ -18,6 +18,16 @@ public abstract class Stmt extends Node {
             return visitor.visitExpr(this);
         }
 
+        public boolean compareTo(Object stmt) {
+            if (!(stmt instanceof Expression)) {
+                return false;
+            }
+
+            Expression comp = (Expression) stmt;
+
+            return comp.line == this.line && comp.expr.compareTo(this.expr);
+        }
+
         public final Expr expr;
     }
 
@@ -30,6 +40,16 @@ public abstract class Stmt extends Node {
         @Override
         public <R> R accept(Visitor<R> visitor) {
             return visitor.visitPrint(this);
+        }
+
+        public boolean compareTo(Object stmt) {
+            if (!(stmt instanceof Print)) {
+                return false;
+            }
+
+            Print comp = (Print) stmt;
+
+            return comp.line == this.line && comp.expr.compareTo(this.expr);
         }
 
         public final Expr expr;
