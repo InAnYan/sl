@@ -4,21 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="08668a3f-c733-4793-a4dc-1ce013ba2665" name="Changes" comment="well...">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="08668a3f-c733-4793-a4dc-1ce013ba2665" name="Changes" comment="bools, nil, characters">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sl.iml" beforeDir="false" afterPath="$PROJECT_DIR$/sl.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/ast/Expr.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/ast/Expr.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/ast/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/ast/Node.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/ast/Stmt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/ast/Stmt.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/lang/Interpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/lang/Interpreter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/goals.txt" beforeDir="false" afterPath="$PROJECT_DIR$/goals.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/inanyan/jsl/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/jsl/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/lang/Rules.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/lang/Rules.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/parsing/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/parsing/Lexer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/parsing/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/parsing/Parser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/parsing/TokenType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/parsing/TokenType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/test/LexerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/test/LexerTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/test/ParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/test/ParserTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/test/TestVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/test/TestVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/inanyan/sl/test/TestsErrorListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/inanyan/sl/test/TestsErrorListener.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +77,7 @@
     </key>
   </component>
   <component name="RunManager" selected="JUnit.ParserTest">
-    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
+    <configuration name="jsl" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.inanyan.jsl.Main" />
       <module name="sl" />
       <method v="2">
@@ -174,7 +169,7 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.Unnamed" />
+      <item itemvalue="Application.jsl" />
       <item itemvalue="JUnit.LexerTest" />
       <item itemvalue="JUnit.ParserTest" />
     </list>
@@ -201,7 +196,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669664942888</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="bools, nil, characters">
+      <created>1671173805190</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1671173805190</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -217,17 +219,18 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="well..." />
-    <option name="LAST_COMMIT_MESSAGE" value="well..." />
+    <MESSAGE value="bools, nil, characters" />
+    <option name="LAST_COMMIT_MESSAGE" value="bools, nil, characters" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/sl$LexerTest.ic" NAME="LexerTest Coverage Results" MODIFIED="1671173512244" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+    <SUITE FILE_PATH="coverage/sl$LexerTest.ic" NAME="LexerTest Coverage Results" MODIFIED="1671217943647" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>com.inanyan.sl.parsing.Lexer</FILTER>
       <FILTER>com.inanyan.sl.parsing.Rules</FILTER>
       <FILTER>com.inanyan.sl.parsing.Token</FILTER>
       <FILTER>com.inanyan.sl.parsing.TokenType</FILTER>
       <FILTER>com.inanyan.sl.util.ErrorListener</FILTER>
     </SUITE>
-    <SUITE FILE_PATH="coverage/sl$ParserTest.ic" NAME="ParserTest Coverage Results" MODIFIED="1671173624774" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+    <SUITE FILE_PATH="coverage/sl$ParserTest.ic" NAME="ParserTest Coverage Results" MODIFIED="1671218041365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>com.inanyan.sl.util.ErrorListener</FILTER>
       <FILTER>com.inanyan.sl.ast.Expr</FILTER>
       <FILTER>com.inanyan.sl.ast.Node</FILTER>

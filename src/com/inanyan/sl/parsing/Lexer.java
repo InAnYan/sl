@@ -54,40 +54,62 @@ public class Lexer {
                 } else if (Rules.isAlphabetic(cur) || cur == '_') {
                     identifierOrKeyword();
                 } else {
-                    errorListener.reportError(line, "unknown character");
+                    errorListener.reportError(line, "unexpected character");
                 }
                 break;
         }
     }
 
-    private void string() {
-
+    private char scanStringChar() {
+        // TODO: What to do with literal new line in char or string?
+        char ch = advance();
+        if (ch == '\\') {
+            return escape(advance());
+        } else {
+            return ch;
+        }
     }
 
-    private void character() {
-        boolean isEscaped = false;
-        if (peek() == '\\') {
-            advance();
-            isEscaped = true;
+    private char escape(char ch) {
+        switch (ch) {
+            case 't':  return '\t';
+            case 'n':  return '\n';
+            case 'r':  return '\r';
+
+            case '\\':
+            case '\'':
+            case '\"':
+                return ch;
+
+            default:
+                errorListener.reportWarning(line, "unknown escape sequence, leaving as is");
+                return ch;
+        }
+    }
+
+    private void string() {
+        StringBuilder sb = new StringBuilder();
+        while (!isAtEnd() && peek() != '\"') {
+            sb.append(scanStringChar());
         }
 
-        char ch = peek();
-        advance();
+        if (peek() != '\"') {
+            errorListener.reportError(line, "unterminated string");
+        } else {
+            advance();
+        }
+
+        addToken(TokenType.STRING, sb.toString());
+    }
+
+    // TODO: Better. Make accepting as string, but to be error.
+    private void character() {
+        char ch = scanStringChar();
 
         if (peek() != '\'') {
             errorListener.reportError(line, "unterminated character literal");
         } else {
             advance();
-        }
-
-        if (isEscaped) {
-            switch (ch) {
-                case 'n' -> ch = '\n';
-                case 'r' -> ch = '\r';
-                case 't' -> ch = '\t';
-                case '\\' -> {}
-                default -> errorListener.reportWarning(line, "unknown escape sequence, leaving as is");
-            }
         }
 
         addToken(TokenType.CHARACTER, String.valueOf(ch));
@@ -106,8 +128,8 @@ public class Lexer {
     static {
         keywords.put("print", TokenType.PRINT);
         keywords.put("nil", TokenType.NIL);
-        keywords.put("True", TokenType.TRUE);
-        keywords.put("False", TokenType.FALSE);
+        keywords.put("true", TokenType.TRUE);
+        keywords.put("false", TokenType.FALSE);
     }
 
     private TokenType isKeyword(String text) {
@@ -119,11 +141,23 @@ public class Lexer {
         }
     }
 
-    private void number() {
+    private void collectNumbers() {
         while (Rules.isDigit(peek())) {
             advance();
         }
-        addToken(TokenType.INT_NUMBER);
+    }
+
+    private void number() {
+        collectNumbers();
+
+        boolean isFloat = false;
+        if (peek() == '.') {
+            advance();
+            collectNumbers();
+            addToken(TokenType.FLOAT_NUMBER);
+        } else {
+            addToken(TokenType.INT_NUMBER);
+        }
     }
 
     private void comment() {

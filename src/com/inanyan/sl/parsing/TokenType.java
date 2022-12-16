@@ -5,10 +5,9 @@ public enum TokenType {
     SEMICOLON,
 
     // Big.
-    INT_NUMBER,
     IDENTIFIER,
-    CHARACTER,
-    STRING,
+    INT_NUMBER, FLOAT_NUMBER,
+    CHARACTER, STRING,
 
     // Keywords.
     PRINT,

@@ -142,14 +142,14 @@ class ParserTest {
 
     @Test
     void trueExpr() {
-        generateAndCheck("True;", 1);
+        generateAndCheck("true;", 1);
         noErrorsAndWarnings();
         assertNode(0, new Stmt.Expression(0, new Expr.BoolLiteral(0, true)));
     }
 
     @Test
     void falsePrint() {
-        generateAndCheck("print False;", 1);
+        generateAndCheck("print false;", 1);
         noErrorsAndWarnings();
         assertNode(0, new Stmt.Print(0, new Expr.BoolLiteral(0, false)));
     }
@@ -159,6 +159,24 @@ class ParserTest {
         generateAndCheck("print '\n';", 1);
         noErrorsAndWarnings();
         assertNode(0, new Stmt.Print(0, new Expr.CharLiteral(0, '\n')));
+    }
+
+    @Test
+    void printNumCharString() {
+        generateAndCheck("\tprint 123;\n\tprint   'c' ;\t\t\nprint \"abc\"    ;\r\t\n", 3);
+        noErrorsAndWarnings();
+
+        assertNode(0, new Stmt.Print(0, new Expr.IntLiteral(0, 123)));
+        assertNode(1, new Stmt.Print(1, new Expr.CharLiteral(1, 'c')));
+        assertNode(2, new Stmt.Print(2, new Expr.StringLiteral(2, "abc")));
+    }
+
+    @Test
+    void floatExpr() {
+        generateAndCheck("132.4;", 1);
+        noErrorsAndWarnings();
+
+        assertNode(0, new Stmt.Expression(0, new Expr.FloatLiteral(0, 132.4)));
     }
 
     @Test
@@ -187,16 +205,31 @@ class ParserTest {
         assertFalse(boolLiteral.fullyCompareTo(9));
         assertTrue(boolLiteral.fullyCompareTo(new Expr.BoolLiteral(2, true)));
 
+        Expr.CharLiteral charLiteral = new Expr.CharLiteral(7, 'c');
+        assertFalse(charLiteral.fullyCompareTo("c"));
+        assertTrue(charLiteral.fullyCompareTo(new Expr.CharLiteral(7, 'c')));
+
+        Expr.StringLiteral stringLiteral = new Expr.StringLiteral(7, "string");
+        assertFalse(stringLiteral.fullyCompareTo("c"));
+        assertTrue(stringLiteral.fullyCompareTo(new Expr.StringLiteral(7, "string")));
+
+        Expr.FloatLiteral floatLiteral = new Expr.FloatLiteral(0, 3.15);
+        assertFalse(floatLiteral.fullyCompareTo(3.14));
+        assertTrue(floatLiteral.fullyCompareTo(new Expr.FloatLiteral(0, 3.15)));
+
         Rules.isAlphabetic('a');
         Rules.isDigit('a');
         Rules.isAlphaDigit('a');
 
         TestVisitor visitor = new TestVisitor();
         assertEquals(1, visitor.visit(var));
+        assertEquals(2, visitor.visit(exprS));
         assertEquals(2, visitor.visit(print));
         assertEquals(1, visitor.visit(intLiteral));
         assertEquals(1, visitor.visit(boolLiteral));
         assertEquals(1, visitor.visit(nilLiteral));
-        assertEquals(2, visitor.visit(exprS));
+        assertEquals(1, visitor.visit(charLiteral));
+        assertEquals(1, visitor.visit(stringLiteral));
+        assertEquals(1, visitor.visit(floatLiteral));
     }
 }

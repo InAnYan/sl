@@ -99,8 +99,12 @@ public class Main {
     private static void runStr(String str) {
         Lexer lexer = new Lexer(errorListener, str);
         List<Token> tokens = lexer.scanTokens();
+        if (hadError) return;
+
         Parser parser = new Parser(errorListener, tokens);
         List<Stmt> stmts = parser.parse();
+        if (hadError) return;
+
         interpreter.run(stmts);
     }
 }

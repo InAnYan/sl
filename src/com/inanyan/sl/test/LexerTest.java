@@ -267,7 +267,7 @@ class LexerTest {
 
     @Test
     void boolKeyword() {
-        generateTokensAndCheck(" \t True  \n\r\tFalse \n", 3);
+        generateTokensAndCheck(" \t true  \n\r\tfalse \n", 3);
         noErrorsAndWarnings();
         assertType(0, TokenType.TRUE);
         assertLine(0, 0);
@@ -276,8 +276,8 @@ class LexerTest {
     }
 
     @Test
-    void trueButIdentifier() {
-        generateTokensAndCheck(" \t true  \n\r\tfalse \n", 3);
+    void boolButIdentifier() {
+        generateTokensAndCheck(" \t True  \n\r\tFalse \n", 3);
         noErrorsAndWarnings();
         assertType(0, TokenType.IDENTIFIER);
         assertLine(0, 0);
@@ -352,5 +352,61 @@ class LexerTest {
         assertText(1, "c");
         assertText(3, "\t");
         assertText(5, "\\");
+    }
+
+    @Test
+    void string() {
+        generateTokensAndCheck("\"abc\"", 2);
+        noErrorsAndWarnings();
+
+        assertType(0, TokenType.STRING);
+        assertText(0, "abc");
+        assertLine(0, 0);
+    }
+
+    @Test
+    void printString() {
+        generateTokensAndCheck("\tprint \"lox\";\n", 4);
+        noErrorsAndWarnings();
+
+        assertType(0, TokenType.PRINT);
+        assertLine(0, 0);
+
+        assertType(1, TokenType.STRING);
+        assertText(1, "lox");
+        assertLine(1, 0);
+
+        assertType(2, TokenType.SEMICOLON);
+        assertLine(2, 0);
+    }
+
+    @Test
+    void unterminatedString() {
+        generateTokens("print \"ada fas das das sa das ;");
+        noWarnings();
+        shouldBeErrors(1);
+    }
+
+    @Test
+    void floatNumber() {
+        generateTokensAndCheck("3.14", 2);
+        noErrorsAndWarnings();
+
+        assertLine(0, 0);
+        assertText(0, "3.14");
+        assertType(0, TokenType.FLOAT_NUMBER);
+    }
+
+    @Test
+    void floatAndSemicolon() {
+        generateTokensAndCheck("\n 123.09   \t;", 3);
+        noErrorsAndWarnings();
+
+        assertLine(0, 1);
+        assertText(0, "123.09");
+        assertType(0, TokenType.FLOAT_NUMBER);
+
+        assertLine(1, 1);
+        assertType(1, TokenType.SEMICOLON);
     }
 }

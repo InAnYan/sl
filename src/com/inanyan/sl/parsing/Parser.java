@@ -72,10 +72,12 @@ public class Parser {
 
     private Expr expression() {
         if (match(TokenType.INT_NUMBER)) return intNumber();
+        else if (match(TokenType.FLOAT_NUMBER)) return floatNumber();
         else if (match(TokenType.IDENTIFIER)) return var();
         else if (match(TokenType.NIL)) return nil();
         else if (match(TokenType.TRUE, TokenType.FALSE)) return bool();
         else if (match(TokenType.CHARACTER)) return character();
+        else if (match(TokenType.STRING)) return string();
         else {
             // TODO: Test this
             errorAtPeek("expected expression"); return null;
@@ -90,6 +92,10 @@ public class Parser {
         return new Expr.IntLiteral(previous().line, Integer.parseInt(previous().text));
     }
 
+    private Expr floatNumber() {
+        return new Expr.FloatLiteral(previous().line, Double.parseDouble(previous().text));
+    }
+
     private Expr nil() {
         return new Expr.NilLiteral(previous().line);
     }
@@ -100,6 +106,10 @@ public class Parser {
 
     private Expr character() {
         return new Expr.CharLiteral(previous().line, previous().text.charAt(0));
+    }
+
+    private Expr string() {
+        return new Expr.StringLiteral(previous().line, previous().text);
     }
 
     private void skipSemicolons() {

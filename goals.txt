@@ -2,5 +2,5 @@
    Semicolons
 -2. Tests, comments, tests, not dumb listener
 -3. Expression statement, print statement, only expression - integer, visitors, tests, parsing
-4. Float expressions, strings, bools, character, nil. Tests
+-4. Float expressions, strings, bools, character, nil. Tests
 5. Unary operators: not, negate
