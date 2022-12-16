@@ -19,6 +19,31 @@ public class TestVisitor implements Expr.Visitor<Integer>, Stmt.Visitor<Integer>
     }
 
     @Override
+    public Integer visitFloatLiteral(Expr.FloatLiteral expr) {
+        return 1;
+    }
+
+    @Override
+    public Integer visitBoolLiteral(Expr.BoolLiteral expr) {
+        return 1;
+    }
+
+    @Override
+    public Integer visitStringLiteral(Expr.StringLiteral expr) {
+        return 1;
+    }
+
+    @Override
+    public Integer visitCharLiteral(Expr.CharLiteral expr) {
+        return 1;
+    }
+
+    @Override
+    public Integer visitNilLiteral(Expr.NilLiteral expr) {
+        return 1;
+    }
+
+    @Override
     public Integer visitVar(Expr.Var expr) {
         return 1;
     }

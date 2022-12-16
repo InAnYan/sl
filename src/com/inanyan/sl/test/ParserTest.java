@@ -9,7 +9,6 @@ import com.inanyan.sl.parsing.Rules;
 import com.inanyan.sl.parsing.Token;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +53,7 @@ class ParserTest {
     }
 
     private void assertNode(int index, Node node) {
-        assertTrue(stmts.get(index).compareTo(node));
+        assertTrue(stmts.get(index).fullyCompareTo(node));
     }
 
     @Test
@@ -135,22 +134,58 @@ class ParserTest {
     }
 
     @Test
+    void printNil() {
+        generateAndCheck("\nprint \nnil\n;\n", 1);
+        noErrorsAndWarnings();
+        assertNode(0, new Stmt.Print(1, new Expr.NilLiteral(2)));
+    }
+
+    @Test
+    void trueExpr() {
+        generateAndCheck("True;", 1);
+        noErrorsAndWarnings();
+        assertNode(0, new Stmt.Expression(0, new Expr.BoolLiteral(0, true)));
+    }
+
+    @Test
+    void falsePrint() {
+        generateAndCheck("print False;", 1);
+        noErrorsAndWarnings();
+        assertNode(0, new Stmt.Print(0, new Expr.BoolLiteral(0, false)));
+    }
+
+    @Test
+    void printChar() {
+        generateAndCheck("print '\n';", 1);
+        noErrorsAndWarnings();
+        assertNode(0, new Stmt.Print(0, new Expr.CharLiteral(0, '\n')));
+    }
+
+    @Test
     void excludeAndCheckSomeMethods() {
         // Accept, compare in AST
         // Rules
-        // Tests compareTo, but poorly
+        // Tests compareTo
 
         Expr.Var var = new Expr.Var(0, "abc");
-        assertFalse(var.compareTo(9));
+        assertFalse(var.fullyCompareTo(9));
         Stmt.Print print = new Stmt.Print(0, var);
-        assertTrue(print.compareTo(new Stmt.Print(0, new Expr.Var(0, "abc"))));
-        assertFalse(print.compareTo(10));
+        assertTrue(print.fullyCompareTo(new Stmt.Print(0, new Expr.Var(0, "abc"))));
+        assertFalse(print.fullyCompareTo(10));
 
         Expr.IntLiteral intLiteral = new Expr.IntLiteral(0, 10);
-        assertFalse(intLiteral.compareTo(9));
+        assertFalse(intLiteral.fullyCompareTo(9));
         Stmt.Expression exprS = new Stmt.Expression(1, intLiteral);
-        assertTrue(exprS.compareTo(new Stmt.Expression(1, new Expr.IntLiteral(0, 10))));
-        assertFalse(exprS.compareTo(10));
+        assertTrue(exprS.fullyCompareTo(new Stmt.Expression(1, new Expr.IntLiteral(0, 10))));
+        assertFalse(exprS.fullyCompareTo(10));
+
+        Expr.NilLiteral nilLiteral = new Expr.NilLiteral(1);
+        assertFalse(nilLiteral.fullyCompareTo(8));
+        assertTrue(nilLiteral.fullyCompareTo(new Expr.NilLiteral(1)));
+
+        Expr.BoolLiteral boolLiteral = new Expr.BoolLiteral(2, true);
+        assertFalse(boolLiteral.fullyCompareTo(9));
+        assertTrue(boolLiteral.fullyCompareTo(new Expr.BoolLiteral(2, true)));
 
         Rules.isAlphabetic('a');
         Rules.isDigit('a');
@@ -160,6 +195,8 @@ class ParserTest {
         assertEquals(1, visitor.visit(var));
         assertEquals(2, visitor.visit(print));
         assertEquals(1, visitor.visit(intLiteral));
+        assertEquals(1, visitor.visit(boolLiteral));
+        assertEquals(1, visitor.visit(nilLiteral));
         assertEquals(2, visitor.visit(exprS));
     }
 }

@@ -43,11 +43,10 @@ public class Parser {
         while (true) {
             if (previous().type == TokenType.SEMICOLON) return;
             switch (peek().type) {
-                case PRINT:
-                case EOF:
+                case PRINT, EOF -> {
                     return;
-                default:
-                    advance();
+                }
+                default -> advance();
             }
         }
     }
@@ -74,6 +73,9 @@ public class Parser {
     private Expr expression() {
         if (match(TokenType.INT_NUMBER)) return intNumber();
         else if (match(TokenType.IDENTIFIER)) return var();
+        else if (match(TokenType.NIL)) return nil();
+        else if (match(TokenType.TRUE, TokenType.FALSE)) return bool();
+        else if (match(TokenType.CHARACTER)) return character();
         else {
             // TODO: Test this
             errorAtPeek("expected expression"); return null;
@@ -88,8 +90,22 @@ public class Parser {
         return new Expr.IntLiteral(previous().line, Integer.parseInt(previous().text));
     }
 
+    private Expr nil() {
+        return new Expr.NilLiteral(previous().line);
+    }
+
+    private Expr bool() {
+        return new Expr.BoolLiteral(previous().line, previous().type == TokenType.TRUE);
+    }
+
+    private Expr character() {
+        return new Expr.CharLiteral(previous().line, previous().text.charAt(0));
+    }
+
     private void skipSemicolons() {
-        while (match(TokenType.SEMICOLON));
+        while (!isAtEnd() && peek().type == TokenType.SEMICOLON) {
+            advance();
+        }
     }
 
     private void error(int line, String msg) {
@@ -97,18 +113,20 @@ public class Parser {
         throw new ParserError();
     }
 
-    private void errorAtPrevious(String msg) {
-        error(previous().line, msg);
-    }
+    //private void errorAtPrevious(String msg) {
+    //  error(previous().line, msg);
+    //}
 
     private void errorAtPeek(String msg) {
         error(peek().line, msg);
     }
 
-    private boolean match(TokenType type) {
-        if (peek().type == type) {
-            advance();
-            return true;
+    private boolean match(TokenType... types) {
+        for (TokenType type : types) {
+            if (peek().type == type) {
+                advance();
+                return true;
+            }
         }
         return false;
     }

@@ -49,7 +49,7 @@ class LexerTest {
         result = lexer.scanTokens();
     }
 
-    private void generateAndCheckTokens(String text, int expectedLength) {
+    private void generateTokensAndCheck(String text, int expectedLength) {
         generateTokens(text);
         checkTokens(result, expectedLength);
     }
@@ -72,7 +72,7 @@ class LexerTest {
     }
 
     private void shouldBeWarnings(int count) {
-        assertEquals(count, errorListener.getErrorsCount());
+        assertEquals(count, errorListener.getWarningsCount());
     }
 
     private void checkIntNumber(int index, int number) {
@@ -99,19 +99,19 @@ class LexerTest {
 
     @Test
     void empty() {
-        generateAndCheckTokens("", 1);
+        generateTokensAndCheck("", 1);
         noErrorsAndWarnings();
     }
 
     @Test
     void someSpaces() {
-        generateAndCheckTokens("   \n \n  \n \t   \n \t \r \r \t \n ", 1);
+        generateTokensAndCheck("   \n \n  \n \t   \n \t \r \r \t \n ", 1);
         noErrorsAndWarnings();
     }
 
     @Test
     void lotsOfSemicolons() {
-        generateAndCheckTokens(";;;;;;;;;;;;;;;;;;;;;;;;;;;", 28);
+        generateTokensAndCheck(";;;;;;;;;;;;;;;;;;;;;;;;;;;", 28);
         noErrorsAndWarnings();
         inRange(0, 26, TokenType.SEMICOLON);
         inRange(0, 26, 0);
@@ -119,7 +119,7 @@ class LexerTest {
 
     @Test
     void spacesAndSemicolons() {
-        generateAndCheckTokens("; ;  \n ; ;     ;\n ;\r  \r  \t  ;;\t;;;;\t\n;;\r;", 16);
+        generateTokensAndCheck("; ;  \n ; ;     ;\n ;\r  \r  \t  ;;\t;;;;\t\n;;\r;", 16);
         noErrorsAndWarnings();
         inRange(0, 14, TokenType.SEMICOLON);
 
@@ -152,19 +152,19 @@ class LexerTest {
 
     @Test
     void lineCommentIsWhole() {
-        generateAndCheckTokens("# HI!", 1);
+        generateTokensAndCheck("# HI!", 1);
         noErrorsAndWarnings();
     }
 
     @Test
     void lineCommentAndNewLine() {
-        generateAndCheckTokens("# HI!\n", 1);
+        generateTokensAndCheck("# HI!\n", 1);
         noErrorsAndWarnings();
     }
 
     @Test
     void lineCommentAndSemicolons() {
-        generateAndCheckTokens("; ; ; ; ;# HI!\n;\n ;  ; ;", 10);
+        generateTokensAndCheck("; ; ; ; ;# HI!\n;\n ;  ; ;", 10);
         noErrorsAndWarnings();
         inRange(0, 8, TokenType.SEMICOLON);
 
@@ -175,7 +175,7 @@ class LexerTest {
 
     @Test
     void someLineCommentsInCode() {
-        generateAndCheckTokens("; # hhh\n ; #;\n; ; ;# HI!\n;\n   ; ;#BYE", 9);
+        generateTokensAndCheck("; # hhh\n ; #;\n; ; ;# HI!\n;\n   ; ;#BYE", 9);
         noErrorsAndWarnings();
         inRange(0, 7, TokenType.SEMICOLON);
 
@@ -188,7 +188,7 @@ class LexerTest {
 
     @Test
     void basicNumber() {
-        generateAndCheckTokens("123", 2);
+        generateTokensAndCheck("123", 2);
         noErrorsAndWarnings();
         checkIntNumber(0, 123);
         assertLine(0, 0);
@@ -196,7 +196,7 @@ class LexerTest {
 
     @Test
     void threeNumbersAndSpaces() {
-        generateAndCheckTokens("    0 \r 7\t \n  28 ", 4);
+        generateTokensAndCheck("    0 \r 7\t \n  28 ", 4);
         noErrorsAndWarnings();
         checkIntNumber(0, 0);
         assertLine(0, 0);
@@ -208,14 +208,14 @@ class LexerTest {
 
     @Test
     void basicIdentifier() {
-        generateAndCheckTokens("bla_Bla123", 2);
+        generateTokensAndCheck("bla_Bla123", 2);
         noErrorsAndWarnings();
         checkIdentifier(0, "bla_Bla123");
     }
 
     @Test
     void threeIdentifiersAndSapces() {
-        generateAndCheckTokens("a2sb \t\n__asd\n\r  \t\r \t \tppek__\n", 4);
+        generateTokensAndCheck("a2sb \t\n__asd\n\r  \t\r \t \tppek__\n", 4);
         noErrorsAndWarnings();
         checkIdentifier(0, "a2sb");
         assertLine(0, 0);
@@ -227,14 +227,14 @@ class LexerTest {
 
     @Test
     void printKeyword() {
-        generateAndCheckTokens("print", 2);
+        generateTokensAndCheck("\tprint\n\r", 2);
         assertType(0, TokenType.PRINT);
         assertLine(0, 0);
     }
 
     @Test
     void printStatement() {
-        generateAndCheckTokens("print abc;", 4);
+        generateTokensAndCheck("print abc;", 4);
         noErrorsAndWarnings();
         assertLine(0, 0);
         assertLine(1, 0);
@@ -243,5 +243,114 @@ class LexerTest {
         assertType(1, TokenType.IDENTIFIER);
         assertText(1, "abc");
         assertType(2, TokenType.SEMICOLON);
+    }
+
+    @Test
+    void nilKeyword() {
+        generateTokensAndCheck(" nil\n", 2);
+        noErrorsAndWarnings();
+        assertType(0, TokenType.NIL);
+        assertLine(0, 0);
+    }
+
+    @Test
+    void printNil() {
+        generateTokensAndCheck("\t \rprint \n  nil;\n", 4);
+        noErrorsAndWarnings();
+        assertType(0, TokenType.PRINT);
+        assertLine(0, 0);
+        assertType(1, TokenType.NIL);
+        assertLine(1, 1);
+        assertType(2, TokenType.SEMICOLON);
+        assertLine(2, 1);
+    }
+
+    @Test
+    void boolKeyword() {
+        generateTokensAndCheck(" \t True  \n\r\tFalse \n", 3);
+        noErrorsAndWarnings();
+        assertType(0, TokenType.TRUE);
+        assertLine(0, 0);
+        assertType(1, TokenType.FALSE);
+        assertLine(1, 1);
+    }
+
+    @Test
+    void trueButIdentifier() {
+        generateTokensAndCheck(" \t true  \n\r\tfalse \n", 3);
+        noErrorsAndWarnings();
+        assertType(0, TokenType.IDENTIFIER);
+        assertLine(0, 0);
+        assertType(1, TokenType.IDENTIFIER);
+        assertLine(1, 1);
+    }
+
+    @Test
+    void simpleChar() {
+        generateTokensAndCheck("'c'", 2);
+        noErrorsAndWarnings();
+        assertType(0, TokenType.CHARACTER);
+        assertText(0, "c");
+        assertLine(0, 0);
+    }
+
+    @Test
+    void escapedChars() {
+        generateTokensAndCheck("'\\t' '\\r' '\\n'", 4);
+        noErrorsAndWarnings();
+
+        assertType(0, TokenType.CHARACTER);
+        assertText(0, "\t");
+        assertLine(0, 0);
+
+        assertType(1, TokenType.CHARACTER);
+        assertText(1, "\r");
+        assertLine(1, 0);
+
+        assertType(2, TokenType.CHARACTER);
+        assertText(2, "\n");
+        assertLine(2, 0);
+    }
+
+    @Test
+    void unknownEscaped() {
+        generateTokensAndCheck("'\\p'", 2);
+        noErrors();
+        shouldBeWarnings(1);
+        assertType(0, TokenType.CHARACTER);
+        assertText(0, "p");
+        assertLine(0, 0);
+    }
+
+    @Test
+    void unterminatedChar() {
+        generateTokens("print 'c\n\r 't'");
+        shouldBeErrors(1);
+    }
+
+    @Test
+    void characterBigTest() {
+        generateTokensAndCheck("print 'c'; \n\t'\t'; \n'\\\\';", 8);
+        noErrorsAndWarnings();
+
+        assertType(0, TokenType.PRINT);
+        assertType(1, TokenType.CHARACTER);
+        assertType(2, TokenType.SEMICOLON);
+        assertType(3, TokenType.CHARACTER);
+        assertType(4, TokenType.SEMICOLON);
+        assertType(5, TokenType.CHARACTER);
+        assertType(6, TokenType.SEMICOLON);
+
+        assertLine(0, 0);
+        assertLine(1, 0);
+        assertLine(2, 0);
+        assertLine(3, 1);
+        assertLine(4, 1);
+        assertLine(5, 2);
+        assertLine(6, 2);
+
+        assertText(1, "c");
+        assertText(3, "\t");
+        assertText(5, "\\");
     }
 }

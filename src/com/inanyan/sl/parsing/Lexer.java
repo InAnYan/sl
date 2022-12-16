@@ -46,6 +46,8 @@ public class Lexer {
             case '\r':
                 break;
             case '#': comment(); break;
+            case '\'': character(); break;
+            case '\"': string(); break;
             default:
                 if (Rules.isDigit(cur)) {
                     number();
@@ -56,6 +58,39 @@ public class Lexer {
                 }
                 break;
         }
+    }
+
+    private void string() {
+
+    }
+
+    private void character() {
+        boolean isEscaped = false;
+        if (peek() == '\\') {
+            advance();
+            isEscaped = true;
+        }
+
+        char ch = peek();
+        advance();
+
+        if (peek() != '\'') {
+            errorListener.reportError(line, "unterminated character literal");
+        } else {
+            advance();
+        }
+
+        if (isEscaped) {
+            switch (ch) {
+                case 'n' -> ch = '\n';
+                case 'r' -> ch = '\r';
+                case 't' -> ch = '\t';
+                case '\\' -> {}
+                default -> errorListener.reportWarning(line, "unknown escape sequence, leaving as is");
+            }
+        }
+
+        addToken(TokenType.CHARACTER, String.valueOf(ch));
     }
 
     private void identifierOrKeyword() {
@@ -70,6 +105,9 @@ public class Lexer {
     private static final Map<String, TokenType> keywords = new HashMap<>();
     static {
         keywords.put("print", TokenType.PRINT);
+        keywords.put("nil", TokenType.NIL);
+        keywords.put("True", TokenType.TRUE);
+        keywords.put("False", TokenType.FALSE);
     }
 
     private TokenType isKeyword(String text) {
@@ -101,6 +139,10 @@ public class Lexer {
 
     private void addToken(TokenType type) {
         tokens.add(new Token(line, type, source.substring(start, current)));
+    }
+
+    private void addToken(TokenType type, String str) {
+        tokens.add(new Token(line, type, str));
     }
 
     private char peek() {

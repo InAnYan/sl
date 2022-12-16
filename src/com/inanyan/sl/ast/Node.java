@@ -7,5 +7,5 @@ public abstract class Node {
         this.line = line;
     }
 
-    public abstract boolean compareTo(Object stmt);
+    public abstract boolean fullyCompareTo(Object stmt);
 }

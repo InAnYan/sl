@@ -36,6 +36,31 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Object visitFloatLiteral(Expr.FloatLiteral expr) {
+        return expr.value;
+    }
+
+    @Override
+    public Object visitBoolLiteral(Expr.BoolLiteral expr) {
+        return expr.value;
+    }
+
+    @Override
+    public Object visitStringLiteral(Expr.StringLiteral expr) {
+        return expr.value;
+    }
+
+    @Override
+    public Object visitCharLiteral(Expr.CharLiteral expr) {
+        return expr.value;
+    }
+
+    @Override
+    public Object visitNilLiteral(Expr.NilLiteral expr) {
+        return null;
+    }
+
+    @Override
     public Object visitVar(Expr.Var expr) {
         // TODO: To be implemented
         return null;

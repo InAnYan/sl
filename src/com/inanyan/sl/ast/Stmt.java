@@ -18,14 +18,12 @@ public abstract class Stmt extends Node {
             return visitor.visitExpr(this);
         }
 
-        public boolean compareTo(Object stmt) {
-            if (!(stmt instanceof Expression)) {
+        public boolean fullyCompareTo(Object stmt) {
+            if (!(stmt instanceof Expression comp)) {
                 return false;
             }
 
-            Expression comp = (Expression) stmt;
-
-            return comp.line == this.line && comp.expr.compareTo(this.expr);
+            return comp.line == this.line && comp.expr.fullyCompareTo(this.expr);
         }
 
         public final Expr expr;
@@ -42,14 +40,12 @@ public abstract class Stmt extends Node {
             return visitor.visitPrint(this);
         }
 
-        public boolean compareTo(Object stmt) {
-            if (!(stmt instanceof Print)) {
+        public boolean fullyCompareTo(Object stmt) {
+            if (!(stmt instanceof Print comp)) {
                 return false;
             }
 
-            Print comp = (Print) stmt;
-
-            return comp.line == this.line && comp.expr.compareTo(this.expr);
+            return comp.line == this.line && comp.expr.fullyCompareTo(this.expr);
         }
 
         public final Expr expr;
