@@ -9,11 +9,25 @@ import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private final PrintStream out;
-    private final ErrorListener errorListener;
+    private Environment currentEnvironment;
 
-    public Interpreter(ErrorListener errorListener, PrintStream out) {
-        this.errorListener = errorListener;
+    public Interpreter(PrintStream out, Environment environment) {
+        this.currentEnvironment = environment;
         this.out = out;
+    }
+    public Interpreter(PrintStream out) {
+        this.currentEnvironment = new Environment(Builtins.createGlobalEnvironment());
+        this.out = out;
+    }
+
+    public static class Error extends RuntimeException {
+        public final int line;
+        public final String msg;
+        public Error(int line, String msg) {
+            super(msg);
+            this.line = line;
+            this.msg = msg;
+        }
     }
 
     public void run(List<Stmt> stmts) {
@@ -62,8 +76,52 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitVar(Expr.Var expr) {
-        // TODO: To be implemented
-        return null;
+        Object obj = currentEnvironment.lookup(expr.text);
+        if (obj == null) {
+            throw new Error(expr.line, "undefined reference to '" + expr.text + "'");
+        }
+        return obj;
+    }
+
+    @Override
+    public Object visitUnary(Expr.Unary expr) {
+        Object evaluated = evaluate(expr.expr);
+
+        return switch (expr.op) {
+            case NOT -> {
+                if (evaluated instanceof Boolean bool) {
+                    yield !bool;
+                } else {
+                    throw new Error(expr.line, "can't negate '" + evaluated.getClass().getName() + "'");
+                }
+            }
+            case NEGATE -> {
+                if (evaluated instanceof Integer num) {
+                    yield -num;
+                } else if (evaluated instanceof Double num) {
+                    yield -num;
+                } else {
+                    throw new Error(expr.line, "can't negate '" + evaluated.getClass().getName() + "'");
+                }
+            }
+            case PLUS -> {
+                if (evaluated instanceof Integer num) {
+                    yield +num;
+                } else if (evaluated instanceof Double num) {
+                    yield +num;
+                } else {
+                    throw new Error(expr.line, "can't do plus for '" + evaluated.getClass().getName() + "'");
+                }
+            }
+            case BITWISE_NOT -> {
+                if (evaluated instanceof Integer num) {
+                    yield ~num;
+                } else {
+                    throw new Error(expr.line, "can't perform bitwise not for '"
+                            + evaluated.getClass().getName() + "'");
+                }
+            }
+        };
     }
 
     @Override

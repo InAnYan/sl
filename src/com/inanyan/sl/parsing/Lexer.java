@@ -39,15 +39,23 @@ public class Lexer {
         char cur = advance();
         switch (cur) {
             case ';': addToken(TokenType.SEMICOLON); break;
+            case '!': addToken(TokenType.BANG); break;
+            case '-': addToken(TokenType.MINUS); break;
+            case '+': addToken(TokenType.PLUS); break;
+            case '~': addToken(TokenType.TILDA); break;
+
             case '\n':
                 line++;
+
             case ' ':
             case '\t':
             case '\r':
                 break;
-            case '#': comment(); break;
+
+            case '#':  comment(); break;
             case '\'': character(); break;
             case '\"': string(); break;
+
             default:
                 if (Rules.isDigit(cur)) {
                     number();

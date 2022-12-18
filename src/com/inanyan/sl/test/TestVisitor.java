@@ -49,6 +49,11 @@ public class TestVisitor implements Expr.Visitor<Integer>, Stmt.Visitor<Integer>
     }
 
     @Override
+    public Integer visitUnary(Expr.Unary expr) {
+        return 1 + visit(expr.expr);
+    }
+
+    @Override
     public Integer visitExpr(Stmt.Expression stmt) {
         return 1 + visit(stmt.expr);
     }

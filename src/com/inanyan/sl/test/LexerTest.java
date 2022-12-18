@@ -388,6 +388,16 @@ class LexerTest {
     }
 
     @Test
+    void someCharsInString() {
+        generateTokensAndCheck("\"!-\"", 2);
+        noErrorsAndWarnings();
+
+        assertText(0, "!-");
+        assertLine(0, 0);
+        assertType(0, TokenType.STRING);
+    }
+
+    @Test
     void floatNumber() {
         generateTokensAndCheck("3.14", 2);
         noErrorsAndWarnings();
@@ -408,5 +418,49 @@ class LexerTest {
 
         assertLine(1, 1);
         assertType(1, TokenType.SEMICOLON);
+    }
+
+    @Test
+    void plusMinusBitNotFloat() {
+        generateTokensAndCheck(" + - \t~\t628.5", 5);
+        noErrorsAndWarnings();
+
+        assertLine(0, 0);
+        assertType(0, TokenType.PLUS);
+
+        assertLine(1, 0);
+        assertType(1, TokenType.MINUS);
+
+        assertLine(2, 0);
+        assertType(2, TokenType.TILDA);
+
+        assertLine(3, 0);
+        assertText(3, "628.5");
+        assertType(3, TokenType.FLOAT_NUMBER);
+    }
+
+    @Test
+    void minusMinusNumber() {
+        generateTokensAndCheck("\n\t- \t-8\t", 4);
+
+        assertType(0, TokenType.MINUS);
+        assertLine(0, 1);
+
+        assertType(1, TokenType.MINUS);
+        assertLine(1, 1);
+
+        assertType(2, TokenType.INT_NUMBER);
+        assertText(2, "8");
+        assertLine(2, 1);
+    }
+
+    @Test
+    void negateTrue() {
+        generateTokensAndCheck("!true", 3);
+
+        assertType(0, TokenType.BANG);
+        assertLine(0, 0);
+        assertType(1, TokenType.TRUE);
+        assertLine(1, 0);
     }
 }

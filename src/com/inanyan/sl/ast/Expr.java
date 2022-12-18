@@ -165,6 +165,37 @@ public abstract class Expr extends Node {
         public String text;
     }
 
+    public static class Unary extends Expr {
+        public Unary(int line, Op op, Expr expr) {
+            super(line);
+            this.op = op;
+            this.expr = expr;
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitUnary(this);
+        }
+
+        @Override
+        public boolean fullyCompareTo(Object stmt) {
+            if (!(stmt instanceof Unary comp)) {
+                return false;
+            }
+
+            return comp.line == this.line && comp.op == this.op && comp.expr.fullyCompareTo(this.expr);
+        }
+
+        public static enum Op {
+            NOT, NEGATE, PLUS,
+
+            BITWISE_NOT
+        }
+
+        public Op op;
+        public Expr expr;
+    }
+
     public interface Visitor<R> {
         R visitIntLiteral(IntLiteral expr);
         R visitFloatLiteral(FloatLiteral expr);
@@ -173,5 +204,6 @@ public abstract class Expr extends Node {
         R visitCharLiteral(CharLiteral expr);
         R visitNilLiteral(NilLiteral expr);
         R visitVar(Var expr);
+        R visitUnary(Unary expr);
     }
 }

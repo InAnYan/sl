@@ -4,6 +4,12 @@ public enum TokenType {
     // One-char length.
     SEMICOLON,
 
+    // Math
+    BANG, MINUS, PLUS,
+
+    // Bitwise operators
+    TILDA,
+
     // Big.
     IDENTIFIER,
     INT_NUMBER, FLOAT_NUMBER,

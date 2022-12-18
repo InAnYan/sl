@@ -71,6 +71,31 @@ public class Parser {
     }
 
     private Expr expression() {
+        return unary();
+    }
+
+    private Expr unary() {
+        if (match(TokenType.BANG, TokenType.MINUS, TokenType.PLUS, TokenType.TILDA)) {
+            int line = previous().line;
+            Expr.Unary.Op op = tokenTypeToUnaryOp(previous().type);
+            Expr expr = unary();
+            return new Expr.Unary(line, op, expr);
+        } else {
+            return primary();
+        }
+    }
+
+    public static Expr.Unary.Op tokenTypeToUnaryOp(TokenType type) {
+        return switch (type) {
+            case BANG -> Expr.Unary.Op.NOT;
+            case MINUS -> Expr.Unary.Op.NEGATE;
+            case PLUS -> Expr.Unary.Op.PLUS;
+            case TILDA -> Expr.Unary.Op.BITWISE_NOT;
+            default -> throw new RuntimeException("unknown token type to unary op conversion");
+        };
+    }
+
+    private Expr primary() {
         if (match(TokenType.INT_NUMBER)) return intNumber();
         else if (match(TokenType.FLOAT_NUMBER)) return floatNumber();
         else if (match(TokenType.IDENTIFIER)) return var();
@@ -79,7 +104,6 @@ public class Parser {
         else if (match(TokenType.CHARACTER)) return character();
         else if (match(TokenType.STRING)) return string();
         else {
-            // TODO: Test this
             errorAtPeek("expected expression"); return null;
         }
     }

@@ -33,7 +33,7 @@ public class Main {
         }
     };
 
-    private final static Interpreter interpreter = new Interpreter(errorListener, System.out);
+    private final static Interpreter interpreter = new Interpreter(System.out);
 
     public static void main(String[] args) {
         if (args.length > 1) {

@@ -3,10 +3,7 @@ package com.inanyan.sl.test;
 import com.inanyan.sl.ast.Expr;
 import com.inanyan.sl.ast.Node;
 import com.inanyan.sl.ast.Stmt;
-import com.inanyan.sl.parsing.Lexer;
-import com.inanyan.sl.parsing.Parser;
-import com.inanyan.sl.parsing.Rules;
-import com.inanyan.sl.parsing.Token;
+import com.inanyan.sl.parsing.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -180,6 +177,25 @@ class ParserTest {
     }
 
     @Test
+    void doubleNegatedPrintTrue() {
+        generateAndCheck("\tprint !!true;\n", 1);
+        noErrorsAndWarnings();
+
+        assertNode(0, new Stmt.Print(0, new Expr.Unary(0, Expr.Unary.Op.NOT,
+                new Expr.Unary(0, Expr.Unary.Op.NOT, new Expr.BoolLiteral(0, true)))));
+    }
+
+    @Test
+    void plusMinusBitNotFloatExpr() {
+        generateAndCheck("+-~3.14;", 1);
+        noErrorsAndWarnings();
+
+        assertNode(0, new Stmt.Expression(0, new Expr.Unary(0, Expr.Unary.Op.PLUS,
+                new Expr.Unary(0, Expr.Unary.Op.NEGATE,
+                        new Expr.Unary(0, Expr.Unary.Op.BITWISE_NOT, new Expr.FloatLiteral(0, 3.14))))));
+    }
+
+    @Test
     void excludeAndCheckSomeMethods() {
         // Accept, compare in AST
         // Rules
@@ -217,6 +233,11 @@ class ParserTest {
         assertFalse(floatLiteral.fullyCompareTo(3.14));
         assertTrue(floatLiteral.fullyCompareTo(new Expr.FloatLiteral(0, 3.15)));
 
+        Expr.Unary unary = new Expr.Unary(5, Expr.Unary.Op.NEGATE, new Expr.IntLiteral(4, 666));
+        assertFalse(unary.fullyCompareTo(new Stmt.Expression(9, new Expr.IntLiteral(0, 10))));
+        assertTrue(unary.fullyCompareTo(new Expr.Unary(5, Expr.Unary.Op.NEGATE,
+                new Expr.IntLiteral(4, 666))));
+
         Rules.isAlphabetic('a');
         Rules.isDigit('a');
         Rules.isAlphaDigit('a');
@@ -231,5 +252,8 @@ class ParserTest {
         assertEquals(1, visitor.visit(charLiteral));
         assertEquals(1, visitor.visit(stringLiteral));
         assertEquals(1, visitor.visit(floatLiteral));
+        assertEquals(2, visitor.visit(unary));
+
+        assertThrows(RuntimeException.class, () -> Parser.tokenTypeToUnaryOp(TokenType.STRING));
     }
 }
